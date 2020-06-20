@@ -8,6 +8,9 @@ public class Hex : MonoBehaviour
 
     public float hexSize = 1;
     public Sprite defaultSprite;
+    public HumanPlayer humanPlayer;
+    public AIPlayer[] aiPlayers;
+    public BattleManager battleManager;
 
     private Hex[] neighbors;
     private int x;
@@ -15,24 +18,26 @@ public class Hex : MonoBehaviour
     private int z;
 
     private Sprite visibleSprite;
-    private Competitor owner;
+    public Competitor owner;
     private int numUnits;
     private int updateCounter = 0;
 
     // Start is called before the first frame update
     void Start()
     {
+        numUnits = 0;
 
-        Debug.Log("Hex Started.");
+        if(owner != null)
+            visibleSprite = owner.getTile();
+        else
+            visibleSprite = defaultSprite;
 
         SpriteRenderer renderer = null;
         gameObject.TryGetComponent<SpriteRenderer>(out renderer);
 
-        renderer.sprite = defaultSprite;
+        renderer.sprite = visibleSprite;
 
-        owner = null;
-        numUnits = 0;
-        visibleSprite = defaultSprite;
+        Debug.Log("Hex Started.");
     }
 
     public void initialize(int x, int y){
@@ -48,6 +53,13 @@ public class Hex : MonoBehaviour
 
     public void setNeighbor(Hex neighbor, int position){
         neighbors[position] = neighbor;    
+    }
+
+    public void setVisibleSprite(Sprite visibleSprite){
+        this.visibleSprite = visibleSprite;
+        SpriteRenderer renderer = null;
+        gameObject.TryGetComponent<SpriteRenderer>(out renderer);
+        renderer.sprite = visibleSprite;
     }
 
     public Hex getNeighbor(int position){
@@ -106,20 +118,28 @@ public class Hex : MonoBehaviour
     }
 
     void OnMouseDown(){
-        Debug.Log(name + " was clicked.");
-        Destroy(gameObject);
+        if(owner.Equals(humanPlayer)){
+            Debug.Log("Tile Selected!");
+            humanPlayer.setSelected(this);
+            setVisibleSprite(humanPlayer.getSelectedTile());
+        }else{
+            battleManager.fight(humanPlayer.getSelected(), this);
+            humanPlayer.setSelected(null);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         
-        // //spawn more units
-        // if(updateCounter == 300){
-        //     numUnits++;
-        //     updateCounter = 0;
-        // }else
-        //     updateCounter++;
+        //spawn more units
+        if(updateCounter == 300000000){
+            numUnits++;
+            updateCounter = 0;
+        }else
+            updateCounter++;
+
+        Debug.Log("Reinforcements!");
 
     }
 }
