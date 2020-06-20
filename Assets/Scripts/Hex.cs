@@ -20,7 +20,7 @@ public class Hex : MonoBehaviour
     private Sprite visibleSprite;
     public Competitor owner;
     private int numUnits;
-    private int updateCounter = 0;
+    private float updateCounter = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -118,7 +118,7 @@ public class Hex : MonoBehaviour
     }
 
     void OnMouseDown(){
-        if(owner.Equals(humanPlayer)){
+        if(owner != null && owner.Equals(humanPlayer)){
             Debug.Log("Tile Selected!");
             humanPlayer.setSelected(this);
             setVisibleSprite(humanPlayer.getSelectedTile());
@@ -131,15 +131,12 @@ public class Hex : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-        //spawn more units
-        if(updateCounter == 300000000){
+        if((Time.fixedTime - updateCounter) > 2000){
             numUnits++;
-            updateCounter = 0;
-        }else
-            updateCounter++;
+            updateCounter = Time.fixedTime;
+        }
 
-        Debug.Log("Reinforcements!");
+        // Debug.Log("Reinforcements!");
 
     }
 }
