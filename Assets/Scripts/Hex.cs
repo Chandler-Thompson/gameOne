@@ -23,6 +23,8 @@ public class Hex : MonoBehaviour
     void Start()
     {
 
+        Debug.Log("Hex Started.");
+
         SpriteRenderer renderer = null;
         gameObject.TryGetComponent<SpriteRenderer>(out renderer);
 
@@ -31,12 +33,6 @@ public class Hex : MonoBehaviour
         owner = null;
         numUnits = 0;
         visibleSprite = defaultSprite;
-    }
-
-    public Hex hexFactory(int x, int y){
-        Hex createdHex = new Hex();
-        createdHex.initialize(x, y);
-        return createdHex;
     }
 
     public void initialize(int x, int y){
@@ -109,8 +105,9 @@ public class Hex : MonoBehaviour
         visibleSprite = owner.getTile();
     }
 
-    void onMouseDown(){
+    void OnMouseDown(){
         Debug.Log(name + " was clicked.");
+        Destroy(gameObject);
     }
 
     // Update is called once per frame
