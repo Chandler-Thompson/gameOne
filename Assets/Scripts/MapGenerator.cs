@@ -8,6 +8,7 @@ public class MapGenerator : MonoBehaviour
 
     public Hex baseHex;
     public int mapRadius = 1;
+    public Hex[] map;
 
     private Dictionary<(int, int), Hex> hexTiles = new Dictionary<(int, int), Hex>();
 
@@ -88,24 +89,17 @@ public class MapGenerator : MonoBehaviour
     private Hex generateHex(HashSet<(int, int)> created, int[][] tileChildren, float[][] tileTransitions, float x, float y, int gridX, int gridY, int maxDepth) {
 
         //create this hex
-        
-
         if( Hex.getDistance(0, 0, gridX, gridY) >= maxDepth ){
             Debug.Log("\tReached edge of shape at "+maxDepth+" with ("+gridX+","+gridY+")");
             return null;
         }
 
         if(created.Contains( (gridX, gridY) )){
-            Debug.Log("\tAlready generated this hex.");
+            Debug.Log("\tAlready generated hex at .");
             Hex result = null;
             hexTiles.TryGetValue( (gridX, gridY), out result);
             return result;
         }
-
-        // if(dbug){
-        //     Debug.Log("Reached debug return...");
-        //     return thisHex;
-        // }
 
         Debug.Log("Instantiating ("+gridX+","+gridY+") at ("+x+","+y+")");
 
@@ -137,8 +131,6 @@ public class MapGenerator : MonoBehaviour
                     //We have already created the tile, just need to add it as a neighbor
                 }
                 
-                Debug.Log(thisHex);
-                Debug.Log(neighborHex);
                 thisHex.setNeighbor(neighborHex, i);
             }
 
