@@ -1,0 +1,142 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class Hex : MonoBehaviour
+{
+
+    public float hexSize = 1;
+    public Sprite defaultSprite;
+    public HumanPlayer humanPlayer;
+    public AIPlayer[] aiPlayers;
+    public BattleManager battleManager;
+
+    private Hex[] neighbors;
+    private int x;
+    private int y;
+    private int z;
+
+    private Sprite visibleSprite;
+    public Competitor owner;
+    private int numUnits;
+    private float updateCounter = 0;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        numUnits = 0;
+
+        if(owner != null)
+            visibleSprite = owner.getTile();
+        else
+            visibleSprite = defaultSprite;
+
+        SpriteRenderer renderer = null;
+        gameObject.TryGetComponent<SpriteRenderer>(out renderer);
+
+        renderer.sprite = visibleSprite;
+
+        Debug.Log("Hex Started.");
+    }
+
+    public void initialize(int x, int y){
+        this.x = x;
+        this.y = y;
+        this.z = -(x + y);
+        neighbors = new Hex[6];
+    }
+
+    public (int, int, int) getGridCoords(){
+        return (x, y, z);
+    }
+
+    public void setNeighbor(Hex neighbor, int position){
+        neighbors[position] = neighbor;    
+    }
+
+    public void setVisibleSprite(Sprite visibleSprite){
+        this.visibleSprite = visibleSprite;
+        SpriteRenderer renderer = null;
+        gameObject.TryGetComponent<SpriteRenderer>(out renderer);
+        renderer.sprite = visibleSprite;
+    }
+
+    public Hex getNeighbor(int position){
+
+        switch(position){
+
+            case 0://top left
+                return neighbors[0];
+            case 1://mid left
+                return neighbors[1];
+            case 2://bot left
+                return neighbors[2];
+            case 3://bot right
+                return neighbors[3];
+            case 4://mid right
+                return neighbors[4];
+            case 5://top right
+                return neighbors[5];
+            default:
+                return null;
+        }
+    }
+
+    public static int getDistance(int x1, int y1, int x2, int y2){
+        int z1 = -(x1 + y1);
+        int z2 = -(x2 + y2);
+        return Mathf.Max( Mathf.Abs(x1 - x2), Mathf.Abs(y1 - y2), Mathf.Abs(z1 - z2) );        
+    }
+
+    public int getDistance(int x, int y){
+        int z = -(x + y);
+        return Mathf.Max( Mathf.Abs(this.x - x), Mathf.Abs(this.y - y), Mathf.Abs(this.z - z));
+    }
+
+    public int getDistance(Hex other){
+        //Get the max of x, y, and z to which correlates to the distance
+        return Mathf.Max( Mathf.Abs(this.x - other.x), Mathf.Abs(this.y - other.y), Mathf.Abs(this.z - other.z));
+    }
+
+    public Competitor getOwner(){
+        return this.owner;
+    }
+
+    public int getUnits(){
+        return this.numUnits;
+    }
+
+    public void subUnits(int amount){
+        this.numUnits -= amount;
+    }
+
+    public void changeOwner(Competitor owner, int numUnits){
+        this.owner = owner;
+        this.numUnits = numUnits;
+        visibleSprite = owner.getTile();
+    }
+
+    void OnMouseDown(){
+        if(owner != null && owner.Equals(humanPlayer)){
+            Debug.Log("Tile Selected!");
+            humanPlayer.setSelected(this);
+            setVisibleSprite(humanPlayer.getSelectedTile());
+        }else{
+            battleManager.fight(humanPlayer.getSelected(), this);
+            humanPlayer.setSelected(null);
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if((Time.fixedTime - updateCounter) > 2000){
+            numUnits++;
+            updateCounter = Time.fixedTime;
+        }
+
+        // Debug.Log("Reinforcements!");
+
+    }
+}
