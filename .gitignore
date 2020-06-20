@@ -10,3 +10,11 @@ Library/StateCache/Hierarchy/b4bf2f-mainStage.json
 Assets/Scripts/PlayerClick.cs.meta
 Assets/Scripts/Hex.cs.meta
 .vs/gameOne/v16/Server/sqlite3/db.lock
+*.ide-shm
+.vs/gameOne/v16/Server/sqlite3/storage.ide-shm
+.vs/gameOne/v16/Server/sqlite3/storage.ide-wal
+Assembly-CSharp.csproj
+Library/ArtifactDB
+Library/shadercompiler-UnityShaderCompiler.exe0.log
+Library/SourceAssetDB
+obj/Debug/Assembly-CSharp.csproj.CoreCompileInputs.cache
