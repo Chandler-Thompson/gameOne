@@ -7,3 +7,5 @@ Temp/
 Library/StateCache/Hierarchy/
 Library/StateCache/Hierarchy/b4bf2f-mainStage.json
 Library/StateCache/Hierarchy/b4bf2f-mainStage.json
+Assets/Scripts/PlayerClick.cs.meta
+Assets/Scripts/Hex.cs.meta
