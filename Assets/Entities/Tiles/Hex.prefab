@@ -52,7 +52,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hexSize: 1.7320508
-  defaultSprite: {fileID: 21300000, guid: 40c92ea0ae0623147b0330ce3c13c359, type: 3}
+  defaultSprite: {fileID: 21300000, guid: 338d2d6f0d902fe41a9294aa3d43981d, type: 3}
+  humanPlayer: {fileID: 2919566101080514947, guid: 98d4564e42bf1ca42b6f320fe882d407,
+    type: 3}
+  aiPlayers:
+  - {fileID: 3564194310494813732, guid: e2cabba0a8969f94c962241aa0d90b72, type: 3}
+  - {fileID: 7317797102338463974, guid: 1c109881cb8fd6a49962a290151d5a22, type: 3}
+  - {fileID: 2127939658795935067, guid: 75e0a14e16f7dcd4fa60afb21750c83f, type: 3}
+  - {fileID: 1159717311110980764, guid: 0eee0f7351156714c8ef3c5a78b71e50, type: 3}
+  battleManager: {fileID: 4432468755917628663, guid: 2e025714e7dd44c41af4457712ffe7ef,
+    type: 3}
 --- !u!222 &734602348674279666
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -100,7 +109,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 40c92ea0ae0623147b0330ce3c13c359, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 338d2d6f0d902fe41a9294aa3d43981d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
