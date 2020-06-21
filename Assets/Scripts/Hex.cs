@@ -8,8 +8,7 @@ public class Hex : MonoBehaviour
 
     public float hexSize = 1;
     public Sprite defaultSprite;
-    public HumanPlayer humanPlayer;
-    public AIPlayer[] aiPlayers;
+    public Competitor[] players;//[0] == human player
     public BattleManager battleManager;
     public Hex[] neighbors;
 
@@ -185,6 +184,8 @@ public class Hex : MonoBehaviour
 
     void OnMouseDown(){
 
+        Competitor humanPlayer = players[0];
+
         //If the owner of this tile is the human player
         if(owner != null && owner.Equals(humanPlayer)){
             Debug.Log("Selected hex has "+this.getTotalUnits()+" units.");
@@ -213,6 +214,7 @@ public class Hex : MonoBehaviour
                 }
             }else{//no tile selected, so select this one
                 select();
+                Debug.Log("No tile was selected");
             }
             
         }else if(humanPlayer.getSelected() != null){//Owner of the tile is an AI, or it is unowned
@@ -220,6 +222,8 @@ public class Hex : MonoBehaviour
             if(this.isNeighbor(humanPlayer.getSelected())){//if the two tiles are neighbors
                 Hex.fight(humanPlayer.getSelected(), this);//then fight
             }
+        }else{
+
         }
     }
     
