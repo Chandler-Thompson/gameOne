@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class AIPlayer : Competitor
 {
+
+    public Hex[] ownedTiles;
+
+    
+
     // Start is called before the first frame update
     void Start()
     {

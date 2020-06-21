@@ -11,8 +11,9 @@ public class Hex : MonoBehaviour
     public HumanPlayer humanPlayer;
     public AIPlayer[] aiPlayers;
     public BattleManager battleManager;
+    public Hex[] neighbors;
 
-    private Hex[] neighbors;
+    //grid coords
     private int x;
     private int y;
     private int z;
@@ -20,7 +21,6 @@ public class Hex : MonoBehaviour
     private Sprite visibleSprite;
     public Competitor owner;
     private int numUnits;
-    private float updateCounter = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -49,8 +49,25 @@ public class Hex : MonoBehaviour
         neighbors = new Hex[6];
     }
 
-    public (int, int, int) getGridCoords(){
+    public void initialize(Competitor owner, int x, int y){
+        this.x = x;
+        this.y = y;
+        this.z = -(x + y);
+        neighbors = new Hex[6];
+        this.owner = owner;
+    }
+
+    public (int, int, int) getCoords(){
         return (x, y, z);
+    }
+
+    public bool isNeighbor(Hex other){
+        for(int i = 0; i < neighbors.Length; i++){
+
+            if(neighbors[i] != null && other != null && neighbors[i].Equals(other))
+                return true;
+        }
+        return false;
     }
 
     public void setNeighbor(Hex neighbor, int position){
@@ -113,6 +130,10 @@ public class Hex : MonoBehaviour
         this.numUnits -= amount;
     }
 
+    public void addUnits(int amount){
+        this.numUnits += amount;
+    }
+
     public void changeOwner(Competitor owner, int numUnits){
         this.owner = owner;
         this.numUnits = numUnits;
@@ -120,19 +141,60 @@ public class Hex : MonoBehaviour
     }
 
     void OnMouseDown(){
+
+        //If the owner of this tile is the human player
         if(owner != null && owner.Equals(humanPlayer)){
-            Debug.Log("Tile Selected!");
-            humanPlayer.setSelected(this);
-            setVisibleSprite(humanPlayer.getSelectedTile());
-        }else{
-            battleManager.fight(humanPlayer.getSelected(), this);
-            humanPlayer.setSelected(null);
+            Debug.Log("Selected hex has "+this.getUnits()+" units.");
+
+            //and the human player already selected a tile
+            if(humanPlayer.getSelected() != null){
+
+                if(humanPlayer.getSelected() == this){//selected tile is this one, deselect it
+                    humanPlayer.setSelected(null);
+                    this.setVisibleSprite(humanPlayer.getTile());
+                }else{//this is a different tile with the same owner, transfer units to here, and deselect both
+
+                    this.setVisibleSprite(humanPlayer.getSelectedTile());
+
+                    //transfer units
+                    Hex other = humanPlayer.getSelected();
+                    int numTransfer = other.getUnits()-1;//to always leave one behind
+                    this.addUnits(numTransfer);
+                    other.subUnits(numTransfer);
+
+                    //deselect
+                    humanPlayer.getSelected().setVisibleSprite(humanPlayer.getTile());
+                    this.setVisibleSprite(humanPlayer.getTile());
+                    humanPlayer.setSelected(null);
+                    
+                }
+            }else{//no tile selected, so select this one
+                humanPlayer.setSelected(this);
+                this.setVisibleSprite(humanPlayer.getSelectedTile());
+            }
+            
+        }else if(humanPlayer.getSelected() != null){//Owner of the tile is an AI, or it is unowned
+
+            if(this.isNeighbor(humanPlayer.getSelected())){//if the two tiles are neighbors
+                int winner = battleManager.fight(humanPlayer.getSelected(), this);//fight the tile
+                
+                //deselect tile
+                humanPlayer.getSelected().setVisibleSprite(humanPlayer.getTile());
+                humanPlayer.setSelected(null);
+
+                //if humanPlayer won as attacker, change ownership of this tile
+                if(winner == 1){
+                    this.owner = humanPlayer;
+                    this.setVisibleSprite(humanPlayer.getTile());
+                }
+            }
+
         }
     }
 
     public void reinforce(){
-        Debug.Log("Reinforcements have arrived!");
-        numUnits++;
+        if(owner != null)
+            numUnits++;
     }
 
     // Update is called once per frame
