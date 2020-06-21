@@ -45,8 +45,6 @@ public class Main : MonoBehaviour
 
         for(int i = 1; i < players.Length; i++){
 
-            Debug.Log("Player "+i+" has "+players[i].territoryCount()+" territories.");
-
             if(players[i].territoryCount() != 0)
                 return false;
 
