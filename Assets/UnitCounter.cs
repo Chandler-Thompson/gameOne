@@ -23,7 +23,7 @@ public class UnitCounter : MonoBehaviour
             textMesh = gameObject.GetComponent<TMPro.TextMeshProUGUI>();
 
 
-        int count = grandparent.GetComponent<Hex>().getUnits();
+        int count = grandparent.GetComponent<Hex>().getTotalUnits();
         textMesh.text = ""+count;
 
     }
@@ -39,7 +39,7 @@ public class UnitCounter : MonoBehaviour
             textMesh = gameObject.GetComponent<TMPro.TextMeshProUGUI>();
 
 
-        int count = grandparent.GetComponent<Hex>().getUnits();
+        int count = grandparent.GetComponent<Hex>().getTotalUnits();
         textMesh.text = ""+count;
 
     }

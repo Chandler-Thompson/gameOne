@@ -43,4 +43,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57c36766496ecbc4ea8f16d25bde56ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapGenerator: {fileID: 0}
+  mapManager: {fileID: 592953389313405355, guid: 27621d56faaf03d40a02134770d04a0c,
+    type: 3}
+  players:
+  - {fileID: 2919566101080514947, guid: 98d4564e42bf1ca42b6f320fe882d407, type: 3}
+  - {fileID: 3564194310494813732, guid: e2cabba0a8969f94c962241aa0d90b72, type: 3}
+  - {fileID: 2127939658795935067, guid: 75e0a14e16f7dcd4fa60afb21750c83f, type: 3}
+  - {fileID: 7317797102338463974, guid: 1c109881cb8fd6a49962a290151d5a22, type: 3}
+  - {fileID: 1159717311110980764, guid: 0eee0f7351156714c8ef3c5a78b71e50, type: 3}

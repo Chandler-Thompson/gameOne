@@ -38,8 +38,6 @@ public class Hex : MonoBehaviour
         renderer.sprite = visibleSprite;
 
         InvokeRepeating("reinforce", 0.0f, 3.0f);
-
-        Debug.Log("Hex Started.");
     }
 
     public void initialize(int x, int y){
@@ -122,76 +120,123 @@ public class Hex : MonoBehaviour
         return this.owner;
     }
 
-    public int getUnits(){
+    public void setOwner(Competitor owner){
+        this.owner = owner;
+        setVisibleSprite(owner.getTile());
+    }
+
+    public int getTotalUnits(){
         return this.numUnits;
     }
 
+    public int getMobileUnits(){
+        return this.numUnits-1;
+    }
+
     public void subUnits(int amount){
-        this.numUnits -= amount;
+        //automatically handle potential forgetfulness on passing in a negative
+        this.numUnits = (amount < 0) ? numUnits+amount : numUnits-amount;
     }
 
     public void addUnits(int amount){
-        this.numUnits += amount;
+        //automatically handle potential forgetfullness on passing in a negative
+        this.numUnits = (amount > 0) ? numUnits+amount : numUnits-amount;
+    }
+
+    public void subAll(){
+        this.numUnits = 1;
     }
 
     public void changeOwner(Competitor owner, int numUnits){
+        int oldOwnerCount = this.owner.territoryCount();
+        
+        //old owner loses this territory
+        this.owner.loseTerritory(this);
+
+        //change owners, accept new garrison, and fly new flag
         this.owner = owner;
         this.numUnits = numUnits;
-        visibleSprite = owner.getTile();
+        this.setVisibleSprite(owner.getTile());
+
+        //new owner gains this territory
+        this.owner.gainTerritory(this);
+    }
+
+    //have human player select this hex
+    public void select(){
+
+        //make sure other tile is deselected first
+        if(humanPlayer.getSelected() != null)
+            humanPlayer.getSelected().deselect();
+
+        //select this tile
+        humanPlayer.setSelected(this);
+        this.setVisibleSprite(humanPlayer.getSelectedTile());
+    }
+
+    public void deselect(){
+        
+        //deslect this
+        if(humanPlayer.getSelected() == this)
+            humanPlayer.setSelected(null);
+
+        //visually show deselection
+        this.setVisibleSprite(humanPlayer.getTile());
     }
 
     void OnMouseDown(){
 
         //If the owner of this tile is the human player
         if(owner != null && owner.Equals(humanPlayer)){
-            Debug.Log("Selected hex has "+this.getUnits()+" units.");
+            Debug.Log("Selected hex has "+this.getTotalUnits()+" units.");
 
             //and the human player already selected a tile
             if(humanPlayer.getSelected() != null){
 
                 if(humanPlayer.getSelected() == this){//selected tile is this one, deselect it
-                    humanPlayer.setSelected(null);
-                    this.setVisibleSprite(humanPlayer.getTile());
-                }else{//this is a different tile with the same owner, transfer units to here, and deselect both
+                    deselect();
+                }else{//this is a different tile with the same owner, transfer units to here if adjacent, and deselect both
 
-                    this.setVisibleSprite(humanPlayer.getSelectedTile());
+                    //transfer units, if adjacent
+                    if(this.isNeighbor(humanPlayer.getSelected())){
+                        Hex other = humanPlayer.getSelected();
+                        int numTransfer = other.getMobileUnits();
+                        this.addUnits(numTransfer);
+                        other.subUnits(numTransfer);
 
-                    //transfer units
-                    Hex other = humanPlayer.getSelected();
-                    int numTransfer = other.getUnits()-1;//to always leave one behind
-                    this.addUnits(numTransfer);
-                    other.subUnits(numTransfer);
+                        //deselect both tiles
+                        deselect();
+                        humanPlayer.getSelected().deselect();
 
-                    //deselect
-                    humanPlayer.getSelected().setVisibleSprite(humanPlayer.getTile());
-                    this.setVisibleSprite(humanPlayer.getTile());
-                    humanPlayer.setSelected(null);
-                    
+                    }else{//make this tile the selected one
+                        select();
+                    }
                 }
             }else{//no tile selected, so select this one
-                humanPlayer.setSelected(this);
-                this.setVisibleSprite(humanPlayer.getSelectedTile());
+                select();
             }
             
         }else if(humanPlayer.getSelected() != null){//Owner of the tile is an AI, or it is unowned
 
             if(this.isNeighbor(humanPlayer.getSelected())){//if the two tiles are neighbors
-                int winner = battleManager.fight(humanPlayer.getSelected(), this);//fight the tile
-                
-                //deselect tile
-                humanPlayer.getSelected().setVisibleSprite(humanPlayer.getTile());
-                humanPlayer.setSelected(null);
+
+                int remainingForces = battleManager.fight(humanPlayer.getSelected(), this);//fight the tile
+
+                //remove attackers from attacking tile
+                humanPlayer.getSelected().subAll();
 
                 //if humanPlayer won as attacker, change ownership of this tile
-                if(winner == 1){
-                    this.owner = humanPlayer;
-                    this.setVisibleSprite(humanPlayer.getTile());
+                if(remainingForces > 0){
+                    this.changeOwner(humanPlayer, remainingForces);
+                }else if(remainingForces < 0){//human player lost, remove losses from attack
+                    humanPlayer.getSelected().subAll();
                 }
-            }
 
+                //deselect tile
+                humanPlayer.getSelected().deselect();
+            }
         }
     }
-
     public void reinforce(){
         if(owner != null)
             numUnits++;

@@ -8,12 +8,35 @@ public class Competitor : MonoBehaviour
     public Sprite compsTile;
     public Sprite compsTileSelected;
 
+    protected Dictionary<(int, int), Hex> territory = new Dictionary<(int, int), Hex>();
+
     public Sprite getTile(){
         return this.compsTile;
     }
 
     public Sprite getSelectedTile(){
         return this.compsTileSelected;
+    }
+
+    public void gainTerritory(Hex hex){
+        var coords = hex.getCoords();
+        territory.Add((coords.Item1, coords.Item2), hex);
+    }
+
+    public void loseTerritory(Hex hex){
+        var coords = hex.getCoords();
+        bool result = territory.Remove((coords.Item1, coords.Item2));
+    }
+
+    public bool hasTerritory(Hex hex){
+        var coords = hex.getCoords();
+        Hex temp = null;
+        territory.TryGetValue((coords.Item1, coords.Item2), out temp);
+        return temp != null;
+    }
+
+    public int territoryCount(){
+        return territory.Count;
     }
 
     // override object.Equals
@@ -41,7 +64,7 @@ public class Competitor : MonoBehaviour
     {
         // TODO: write your implementation of GetHashCode() here
         throw new System.NotImplementedException();
-        return base.GetHashCode();
+        //return base.GetHashCode();
     }
 
     // Start is called before the first frame update
