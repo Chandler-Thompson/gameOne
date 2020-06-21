@@ -11,8 +11,10 @@ public class BattleManager : MonoBehaviour
             //reset visible sprites to non-selected variations
             if(attacker != null)
                 attacker.setVisibleSprite(attacker.getOwner().getTile());
-            else
+            
+            if(defender != null)
                 defender.setVisibleSprite(defender.getOwner().getTile());
+            
             return;
         }
 

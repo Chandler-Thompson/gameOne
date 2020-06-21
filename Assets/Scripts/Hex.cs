@@ -37,6 +37,8 @@ public class Hex : MonoBehaviour
 
         renderer.sprite = visibleSprite;
 
+        InvokeRepeating("reinforce", 0.0f, 3.0f);
+
         Debug.Log("Hex Started.");
     }
 
@@ -128,15 +130,11 @@ public class Hex : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if((Time.fixedTime - updateCounter) > 2000){
-            numUnits++;
-            updateCounter = Time.fixedTime;
-        }
-
-        // Debug.Log("Reinforcements!");
-
+    public void reinforce(){
+        Debug.Log("Reinforcements have arrived!");
+        numUnits++;
     }
+
+    // Update is called once per frame
+    void Update(){}
 }
