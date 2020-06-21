@@ -148,10 +148,9 @@ public class Hex : MonoBehaviour
     }
 
     public void changeOwner(Competitor owner, int numUnits){
-        int oldOwnerCount = this.owner.territoryCount();
-        
-        //old owner loses this territory
-        this.owner.loseTerritory(this);
+
+        if(this.owner != null)//old owner loses this territory
+            this.owner.loseTerritory(this);        
 
         //change owners, accept new garrison, and fly new flag
         this.owner = owner;
@@ -166,22 +165,22 @@ public class Hex : MonoBehaviour
     public void select(){
 
         //make sure other tile is deselected first
-        if(humanPlayer.getSelected() != null)
-            humanPlayer.getSelected().deselect();
+        if(owner.getSelected() != null)
+            owner.getSelected().deselect();
 
         //select this tile
-        humanPlayer.setSelected(this);
-        this.setVisibleSprite(humanPlayer.getSelectedTile());
+        owner.setSelected(this);
+        this.setVisibleSprite(owner.getSelectedTile());
     }
 
     public void deselect(){
         
         //deslect this
-        if(humanPlayer.getSelected() == this)
-            humanPlayer.setSelected(null);
+        if(this.getOwner().getSelected() == this)
+            owner.setSelected(null);
 
         //visually show deselection
-        this.setVisibleSprite(humanPlayer.getTile());
+        this.setVisibleSprite(owner.getTile());
     }
 
     void OnMouseDown(){
@@ -219,24 +218,41 @@ public class Hex : MonoBehaviour
         }else if(humanPlayer.getSelected() != null){//Owner of the tile is an AI, or it is unowned
 
             if(this.isNeighbor(humanPlayer.getSelected())){//if the two tiles are neighbors
-
-                int remainingForces = battleManager.fight(humanPlayer.getSelected(), this);//fight the tile
-
-                //remove attackers from attacking tile
-                humanPlayer.getSelected().subAll();
-
-                //if humanPlayer won as attacker, change ownership of this tile
-                if(remainingForces > 0){
-                    this.changeOwner(humanPlayer, remainingForces);
-                }else if(remainingForces < 0){//human player lost, remove losses from attack
-                    humanPlayer.getSelected().subAll();
-                }
-
-                //deselect tile
-                humanPlayer.getSelected().deselect();
+                Hex.fight(humanPlayer.getSelected(), this);//then fight
             }
         }
     }
+    
+    public int attack(Hex other){
+        return fight(this, other);
+    }
+
+    public int defend(Hex other){
+        return fight(other, this);
+    }
+
+    public static int fight(Hex attacker, Hex defender){
+
+        //commence battle
+        int remainingForces = BattleManager.fight(attacker, defender);
+
+        //remove attackers from attacking tile
+        attacker.subAll();
+
+        //if attacker won, change ownership of defending tile
+        if(remainingForces > 0){
+            defender.changeOwner(attacker.getOwner(), remainingForces);
+        }else if(remainingForces < 0){//defender won
+
+        }
+
+        //deselect tile
+        attacker.deselect();
+
+        return remainingForces;
+
+    }
+
     public void reinforce(){
         if(owner != null)
             numUnits++;

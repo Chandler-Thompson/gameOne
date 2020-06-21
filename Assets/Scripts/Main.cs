@@ -7,14 +7,21 @@ public class Main : MonoBehaviour
 {
 
     public MapManager mapManager;
-    
+    public bool genManual;
+    public bool genHex;
+
     private Competitor[] players;
 
     // Start is called before the first frame update
     void Start()
     {
         Debug.Log("Starting generation...");
-        mapManager.beginGenerator();
+
+        if(genManual)
+            mapManager.beginGenerator(1);
+        else if(genHex)
+            mapManager.beginGenerator(0);
+
         players = mapManager.getPlayers();
     }
 

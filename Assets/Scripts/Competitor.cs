@@ -8,7 +8,21 @@ public class Competitor : MonoBehaviour
     public Sprite compsTile;
     public Sprite compsTileSelected;
 
-    protected Dictionary<(int, int), Hex> territory = new Dictionary<(int, int), Hex>();
+    protected Hex selectedTile;
+    protected MapManager mapManager;
+    protected ArrayList territory = new ArrayList();
+
+    public void giveMapManager(MapManager mapManager){
+        this.mapManager = mapManager;
+    }
+
+    public Hex getSelected(){
+        return this.selectedTile;
+    }
+
+    public void setSelected(Hex hex){
+        this.selectedTile = hex;
+    }
 
     public Sprite getTile(){
         return this.compsTile;
@@ -20,19 +34,15 @@ public class Competitor : MonoBehaviour
 
     public void gainTerritory(Hex hex){
         var coords = hex.getCoords();
-        territory.Add((coords.Item1, coords.Item2), hex);
+        territory.Add(hex);
     }
 
     public void loseTerritory(Hex hex){
-        var coords = hex.getCoords();
-        bool result = territory.Remove((coords.Item1, coords.Item2));
+        territory.Remove(hex);
     }
 
     public bool hasTerritory(Hex hex){
-        var coords = hex.getCoords();
-        Hex temp = null;
-        territory.TryGetValue((coords.Item1, coords.Item2), out temp);
-        return temp != null;
+        return territory.Contains(hex);
     }
 
     public int territoryCount(){
@@ -67,15 +77,11 @@ public class Competitor : MonoBehaviour
         //return base.GetHashCode();
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    public virtual void Start(){
+        Debug.Log("Competitor start.");
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    void Update(){
     }
+
 }

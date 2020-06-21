@@ -9,18 +9,11 @@ public class MapManager : MonoBehaviour
     public Hex baseHex;
     public Competitor[] players;
 
-    private bool isMapDone;
-    private static int NUM_NEIGHBORS = 6;
-    private Dictionary<(int, int), Hex> map = new Dictionary<(int, int), Hex>();
-
-    //calculate hex grid placements
-    private static float WIDTH = (Mathf.Sqrt(3) * 0.55f);//original: Mathf.Sqrt(3) * baseHex.hexSize
-    private static float HEIGHT = (2 * 0.55f);//original: 2 * baseHex.hexSize
-    private static float VERTICAL_DIST = (HEIGHT * 0.66f);//original: HEIGHT * 3.0f/4.0f
-
+    public static int NUM_NEIGHBORS = 6;
+    
     //tile's position to their neighbor based on where their neighbor is relative to them
-    private static int[] POS_RELATIVE_TO_NEIGHBORS = new int[]{3, 4, 5, 0, 1, 2};
-    private static int[][] TILE_NEIGHBORS = new int[][] {
+    public static int[] POS_RELATIVE_TO_NEIGHBORS = new int[]{3, 4, 5, 0, 1, 2};
+    public static int[][] TILE_NEIGHBORS = new int[][] {
         new int[]{ 0, -1},//top left
         new int[]{-1,  0},//mid left
         new int[]{-1,  1},//bot left
@@ -28,6 +21,14 @@ public class MapManager : MonoBehaviour
         new int[]{ 1,  0},//mid right
         new int[]{ 1, -1} //top right
     }; 
+
+    private bool isMapDone;
+    private Dictionary<(int, int), Hex> map = new Dictionary<(int, int), Hex>();
+
+    //calculate hex grid placements
+    private static float WIDTH = (Mathf.Sqrt(3) * 0.55f);//original: Mathf.Sqrt(3) * baseHex.hexSize
+    private static float HEIGHT = (2 * 0.55f);//original: 2 * baseHex.hexSize
+    private static float VERTICAL_DIST = (HEIGHT * 0.66f);//original: HEIGHT * 3.0f/4.0f
     private static float[][] HEX_PLACEMENTS = new float[][]{
         new float[]{-WIDTH/2,  VERTICAL_DIST},//top left
         new float[]{-WIDTH,    0.0f},         //mid left
@@ -40,7 +41,6 @@ public class MapManager : MonoBehaviour
     /*
         Miscellaneous
     */
-
     public Competitor[] getPlayers(){
         return players;
     }
@@ -66,15 +66,11 @@ public class MapManager : MonoBehaviour
     //creation failed and returns false if no neighbors found
     public Hex addHex(int gridX, int gridY){
 
-        Debug.Log("\tAdding hex at ("+gridX+","+gridY+")");
-
         if(hexExists(gridX, gridY))//hex already created
             return null;
 
         var result = findNeighborCoords(gridX, gridY);
         if(result.Item1 != -1 && result.Item2 != -1 && result.Item3 != -1){
-
-            Debug.Log("\t\tNeighbor found in position "+result.Item3+". Can proceed with creation.");
 
             float newX = result.Item1 + HEX_PLACEMENTS[result.Item3][0];
             float newY = result.Item2 + HEX_PLACEMENTS[result.Item3][1];
@@ -94,15 +90,11 @@ public class MapManager : MonoBehaviour
     //creation failed and returns false if no neighbors found
     public Hex addHex(Competitor owner, int gridX, int gridY){
 
-        Debug.Log("\tAdding hex at ("+gridX+","+gridY+")");
-
         if(hexExists(gridX, gridY))//hex already created
             return null;
 
         var result = findNeighborCoords(gridX, gridY);
         if(result.Item1 != -1 && result.Item2 != -1 && result.Item3 != -1){
-
-            Debug.Log("\t\tNeighbor found in position "+result.Item3+". Can proceed with creation.");
 
             float newX = result.Item1 + HEX_PLACEMENTS[result.Item3][0];
             float newY = result.Item2 + HEX_PLACEMENTS[result.Item3][1];
@@ -168,8 +160,6 @@ public class MapManager : MonoBehaviour
 
     //returns true if a neighbor found, false otherwise
     private bool connectNeighbors(Hex newHex){
-        
-        Debug.Log("\t\tConnecting Neighbors...");
 
         var coords = newHex.getCoords();
         Hex neighbor = null;
@@ -182,13 +172,10 @@ public class MapManager : MonoBehaviour
             map.TryGetValue((coords.Item1 + TILE_NEIGHBORS[i][0], coords.Item2 + TILE_NEIGHBORS[i][1]), out neighbor);
 
             if(neighbor != null){//neighbor found, add each other
-                Debug.Log("\t\t\tFound a neighbor in position "+i+"!");
                 newHex.setNeighbor(neighbor, i);
                 neighbor.setNeighbor(newHex, invNeighbor);
                 neighborFound = true;
-            }else{
-                Debug.Log("\t\t\tno neighbor found in position "+i+":"+neighbor+":("+(coords.Item1 + TILE_NEIGHBORS[i][0])+","+(coords.Item2 + TILE_NEIGHBORS[i][1])+")");
-            }
+            }else{}
 
             invNeighbor++;
             if(invNeighbor > 5)
@@ -208,23 +195,37 @@ public class MapManager : MonoBehaviour
         return isMapDone;
     }
 
-    public void beginGenerator(){ 
-        isMapDone = false;
-
-        generateHexShape(5);
-        //generateManualMap();
-
-        isMapDone = true;
-    }
-
     private void awardTerritory(Competitor player, Hex awardedTerritory){
         player.gainTerritory(awardedTerritory);
         awardedTerritory.setOwner(player);
     }
 
-    private void generateManualMap(){
+    public void beginGenerator(int mapType){ 
 
-        Debug.Log("Placing initial hex...");
+        //hold...hold...
+        isMapDone = false;
+
+        switch(mapType){
+            case 0:
+                generateHexShape(5);
+                break;
+            case 1:
+                generateManualMap();
+                break;
+            default:
+                generateManualMap();
+                break;
+        }
+
+        //give all players this mapManager
+        for(int i = 0; i < players.Length; i++)
+            players[i].giveMapManager(this);
+
+        //Let the games...begin!
+        isMapDone = true;
+    }
+
+    private void generateManualMap(){
         addHex(0, 0, 0, 0);//place initial hex
 
         bool addedHumanPlayer = false;

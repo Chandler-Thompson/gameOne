@@ -9,7 +9,7 @@ public class BattleManager : MonoBehaviour
     //>0 = attacking units remaining
     // 0 = error occurred
     //<0 = defending units remaining
-    public int fight(Hex attacker, Hex defender){
+    public static int fight(Hex attacker, Hex defender){
 
         //check that both attacker and defender exist
         if(attacker == null || defender == null)          
