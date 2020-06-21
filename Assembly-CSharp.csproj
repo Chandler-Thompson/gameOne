@@ -66,6 +66,7 @@
     <Compile Include="Assets\Scripts\AIPlayer.cs" />
     <Compile Include="Assets\Scripts\BattleManager.cs" />
     <Compile Include="Assets\Scripts\Competitor.cs" />
+    <Compile Include="Assets\Scripts\Hex.cs" />
     <Compile Include="Assets\Scripts\Main.cs" />
     <Compile Include="Assets\Scripts\MapGenerator.cs" />
     <Compile Include="Assets\Scripts\MenuCameraScript.cs" />
