@@ -23,7 +23,7 @@ public class BattleManager : MonoBehaviour
         int numAttackers = attacker.getMobileUnits();
         int numDefenders = defender.getTotalUnits();
 
-        int remainingForces = numDefenders;
+        int remainingForces = -numDefenders;
         string winnerString = "Defender";
 
         int attackerResult = 0;
